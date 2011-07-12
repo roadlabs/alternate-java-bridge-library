@@ -110,22 +110,12 @@ public class ListPicker2 extends Picker implements ActivityResultListener, Delet
 	protected Intent getIntent() {
 		Intent intent = new Intent();
 		intent.setClassName(container.$context(), LIST_ACTIVITY_CLASS);
-		// This is a bit different than how it's done in the original listpicker.
-		// We store the arraylist into a string array, which gets passed to the intent.
 		
-		// Initialize our temporary string array for the size of the element list
-		
-		// The following two need to be tested.
-		// Possible to do this instead of whole for loop:
-		// String[] str = items.toArray(new String[0]);
-		
-		// Better yet, just change the intent line
-		// intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toArray(new String[0]));
-		//String[] str = new String[items.size()];
-		//for (int i = 0; i < items.size(); i++) {
-		//	str[i] = items.get(i);
-		//}
-		
+		// Here we convert our list to a String array. If you noticed the 0,
+    // it's not creating a string array of 0 strings. The list.toArray
+    // automatically creates whatever size array it needs. We need to
+    // sepcify new String[0] in there to convert it from being and
+    // object array to a string array.
 		intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toArray(new String[0]));
 		return intent;		
 	}
