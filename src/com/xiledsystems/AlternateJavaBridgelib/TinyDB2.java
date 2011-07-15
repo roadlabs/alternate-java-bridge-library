@@ -36,7 +36,7 @@ public class TinyDB2 extends AndroidNonvisibleComponent implements Component, De
                             
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Log.e("TinyListDB", "File not found! Which is strange because we're trying to save.");
+            Log.e("TinyDB2", "File not found! Which is strange because we're trying to save.");
             
             
         } catch (IOException e) {
@@ -54,7 +54,7 @@ public class TinyDB2 extends AndroidNonvisibleComponent implements Component, De
             ObjectInputStream ois = new ObjectInputStream(filestream);      
             return ois.readObject();
         } catch (FileNotFoundException e) {
-            Log.e("TinyListDB", "File not found!");
+            Log.e("TinyDB2", "File not found!");
             e.printStackTrace();
             return "null";
         } catch (StreamCorruptedException e) {
@@ -81,7 +81,7 @@ public class TinyDB2 extends AndroidNonvisibleComponent implements Component, De
             templist = (ArrayList<String>) ois.readObject();
             
         } catch (FileNotFoundException e) {
-            Log.e("TinyDB3", "File not found!");
+            Log.e("TinyDB2", "File not found!");
             e.printStackTrace();
             
         } catch (StreamCorruptedException e) {
