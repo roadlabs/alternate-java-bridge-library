@@ -12,7 +12,7 @@ import com.google.devtools.simple.runtime.events.EventDispatcher;
 /**
  * 
  * This is just copied from the Java Bridge's Clock class, with it's constructor modified to
- * be put into a SvcComponentContainer. Also the way it gets context is difference.
+ * be put into a SvcComponentContainer. Also the way it gets context is different.
  * 
  *  Ryan Bis - www.xiledsystems.com
  *
