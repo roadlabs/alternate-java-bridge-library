@@ -1,46 +1,107 @@
 package com.xiledsystems.AlternateJavaBridgelib;
 
-import org.json.JSONException;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
+import java.util.ArrayList;
 import android.content.Context;
-import android.content.SharedPreferences;
-
+import android.util.Log;
 import com.google.devtools.simple.runtime.components.android.AndroidNonvisibleComponent;
 import com.google.devtools.simple.runtime.components.android.ComponentContainer;
 import com.google.devtools.simple.runtime.components.android.Deleteable;
 import com.google.devtools.simple.runtime.components.Component;
-import com.google.devtools.simple.runtime.components.util.JsonUtil;
+
 
 public class TinyDB2 extends AndroidNonvisibleComponent implements Component, Deleteable {
-	
-	private SharedPreferences sharedPreferences;
-	
-	public TinyDB2(ComponentContainer container) {
-		super(container.$form());
-		final Context context = (Context) container.$context();
-		sharedPreferences = context.getSharedPreferences("TinyDB2", Context.MODE_PRIVATE);		
-	}
-	
-	public void StoreValue(final String tag, final Object valueToStore) {
-		final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
-		sharedPrefsEditor.putString(tag, valueToStore.toString());
-		sharedPrefsEditor.commit();
-	}
-	
-	public Object GetValue(final String tag) {
-		try {
-			String value = sharedPreferences.getString(tag, "");
-			return (value.length() == 0) ? "" : JsonUtil.getObjectFromJson(value);
-		} catch (JSONException e) {
-			throw new RuntimeException("Value failed to convert from JSON.");
-		}
-	}
-	
-	@Override
-	public void onDelete() {
-		final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
-		sharedPrefsEditor.clear();
-		sharedPrefsEditor.commit();
-	}
+    
+    public TinyDB2(ComponentContainer container) {
+        super(container.$form());
+            
+    }
+    
+    public void StoreValue(final String tag, final Object valueToStore) {
+    
+        try {
+            
+            Context context = super.form.$context();
+            FileOutputStream fos = context.openFileOutput(tag, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(valueToStore);
+            os.flush();
+            os.close();
+                            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.e("TinyListDB", "File not found! Which is strange because we're trying to save.");
+            
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            
+        } 
+        
+    }
+    
+    public Object GetValue(final String tag) {
+        
+        try {
+            Context context = super.form.$context();
+            FileInputStream filestream = context.openFileInput(tag);    
+            ObjectInputStream ois = new ObjectInputStream(filestream);      
+            return ois.readObject();
+        } catch (FileNotFoundException e) {
+            Log.e("TinyListDB", "File not found!");
+            e.printStackTrace();
+            return "null";
+        } catch (StreamCorruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+         
+        return "null";        
+    }    
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<String> GetList(final String tag) {
+        ArrayList<String> templist = new ArrayList<String>();
+        try {
+            Context context = super.form.$context();
+            FileInputStream filestream = context.openFileInput(tag);    
+            ObjectInputStream ois = new ObjectInputStream(filestream);      
+            templist = (ArrayList<String>) ois.readObject();
+            
+        } catch (FileNotFoundException e) {
+            Log.e("TinyDB3", "File not found!");
+            e.printStackTrace();
+            
+        } catch (StreamCorruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return templist;
+    }
+             
+    
+    @Override
+    public void onDelete() {
+    
+    }
 
 }
+
