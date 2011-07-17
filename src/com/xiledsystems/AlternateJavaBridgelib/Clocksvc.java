@@ -12,14 +12,15 @@ import com.google.devtools.simple.runtime.events.EventDispatcher;
 /**
  * 
  * This is just copied from the Java Bridge's Clock class, with it's constructor modified to
- * be put into a SvcComponentContainer. Also the way it gets context is different.
+ * be put into a SvcComponentContainer. Also the way it gets context is different, as well as
+ * the implementation of the OnStartCommand, and OnDestroy Listeners
  * 
  *  Ryan Bis - www.xiledsystems.com
  *
  */
 
-public final class Clocksvc extends AndroidServiceComponent implements Component, AlarmHandler, Deleteable,
- OnStartCommandListener, OnDestroyListener {
+public final class Clocksvc extends AndroidServiceComponent implements Component, AlarmHandler, Deleteable, OnStartCommandListener,
+OnDestroyListener {
 
 private TimerInternal timerInternal;
 private boolean timerAlwaysFires = true;
@@ -32,10 +33,10 @@ private boolean onScreen = false;
 * @param container ignored (because this is a non-visible component)
 */
 public Clocksvc(SvcComponentContainer container) {
-	super(container.$formService());
-	timerInternal = new TimerInternal(this);
+    super(container.$formService());
+    timerInternal = new TimerInternal(this);
 
-	}
+    }
 
 // Only the above constructor should be used in practice.
 public Clocksvc() {
@@ -375,22 +376,23 @@ return Dates.FormatTime(instant);
 
 @Override
 public void onDelete() {
-	
-	TimerEnabled(false);
-	
-}
-
-@Override
-public void onDestroy() {
     
     TimerEnabled(false);
     
 }
 
 @Override
+public void onDestroy() {
+    
+    TimerEnabled(false);
+        
+}
+
+@Override
 public void onStartCommand() {
 
     onScreen = true;
-    
+    EventDispatcher.dispatchEvent(this, "OnStartCommand");
 }
 }
+
