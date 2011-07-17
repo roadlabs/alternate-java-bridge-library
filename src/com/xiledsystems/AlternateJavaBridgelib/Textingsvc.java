@@ -19,7 +19,7 @@ import com.google.devtools.simple.runtime.events.EventDispatcher;
  */
 
 @SuppressWarnings("deprecation")
-public class Textingsvc extends AndroidServiceComponent implements Component, OnDestroyListener {
+public class Textingsvc extends AndroidServiceComponent implements Component, OnStartCommandListener, OnDestroyListener {
 
     /**
        * Handles the SMS reception
@@ -66,6 +66,8 @@ public class Textingsvc extends AndroidServiceComponent implements Component, On
         smsManager = SmsManager.getDefault();
         PhoneNumber("");
         receivingEnabled = true;
+        formService.registerForOnStartCommand(this);
+        formService.registerForOnDestroy(this);
       }
 
       /**
@@ -188,6 +190,12 @@ public class Textingsvc extends AndroidServiceComponent implements Component, On
 
         // Add a little null action for good measure
         receiver = null;
+        
+    }
+
+    @Override
+    public void onStartCommand() {
+        
         
     }
 }
