@@ -35,6 +35,8 @@ private boolean onScreen = false;
 public Clocksvc(SvcComponentContainer container) {
     super(container.$formService());
     timerInternal = new TimerInternal(this);
+    formService.registerForOnStartCommand(this);
+    formService.registerForOnDestroy(this);
 
     }
 
