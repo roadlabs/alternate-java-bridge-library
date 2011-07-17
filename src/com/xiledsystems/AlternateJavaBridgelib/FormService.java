@@ -8,6 +8,7 @@ import com.google.devtools.simple.runtime.components.android.Deleteable;
 import com.google.devtools.simple.runtime.components.Component;
 import com.google.devtools.simple.runtime.components.HandlesEventDispatching;
 import com.google.devtools.simple.runtime.components.android.collect.Sets;
+import com.google.devtools.simple.runtime.components.util.ErrorMessages;
 import com.google.devtools.simple.runtime.events.EventDispatcher;
 import android.app.Service;
 import android.content.Intent;
@@ -26,16 +27,16 @@ import android.util.Log;
 
 public class FormService extends Service implements Component, SvcComponentContainer, HandlesEventDispatching {
 
-	private static FormService activeFormService;
-	private int stickyVal=START_NOT_STICKY;
-	private static final String LOG_TAG = "FormService";
-	public boolean isRunning=false;
-	private String formServiceName;
-	private final Handler serviceHandler = new Handler();
-	private final Set<OnStartCommandListener> onStartCommandListeners = Sets.newHashSet();
-  private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
-	
-	@Override
+    private static FormService activeFormService;
+    private int stickyVal=START_NOT_STICKY;
+    private static final String LOG_TAG = "FormService";
+    public boolean isRunning=false;
+    private String formServiceName;
+    private final Handler serviceHandler = new Handler();
+    private final Set<OnStartCommandListener> onStartCommandListeners = Sets.newHashSet();
+    private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+    
+    @Override
     public void onCreate() {
        super.onCreate();
        
@@ -51,150 +52,177 @@ public class FormService extends Service implements Component, SvcComponentConta
        $define();
        Initialize();
     }
-	
-	void $define() {
-	    throw new UnsupportedOperationException();
-	  }	
-	
-	@Override
+    
+    void $define() {
+        throw new UnsupportedOperationException();
+      }    
+    
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG, "FormService "+ formServiceName + " got onStartCommand" );
         activeFormService = this;
         for (OnStartCommandListener onStartCommandListener : onStartCommandListeners) {
-        	onStartCommandListener.onStartCommand();
+            onStartCommandListener.onStartCommand();
         }
         return stickyVal;
     }
-	
-	public void setStickyVal(int i) {
-		stickyVal=i;
-	}
-	
-	public void registerForOnStartCommand(OnStartCommandListener component) {
-		onStartCommandListeners.add(component);
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(LOG_TAG, "FormService "+formServiceName+" got onDestroy");
-		
-		EventDispatcher.removeDispatchDelegate(this);
-    for (OnDestroyListener onDestroyListener : onDestroyListeners) {
+    
+    public void setStickyVal(int i) {
+        stickyVal=i;
+    }
+    
+    public void registerForOnStartCommand(OnStartCommandListener component) {
+        onStartCommandListeners.add(component);
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "FormService "+formServiceName+" got onDestroy");
+        EventDispatcher.removeDispatchDelegate(this);
+        for (OnDestroyListener onDestroyListener : onDestroyListeners) {
             onDestroyListener.onDestroy();
         }
-	}
-   
-  public void registerForOnDestroy(OnDestroyListener component) {
+    }
+    
+    public void registerForOnDestroy(OnDestroyListener component) {
         onDestroyListeners.add(component);
     }
-	
-		
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    
+        
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public boolean canDispatchEvent(Component arg0, String arg1) {
-		boolean canDisptach = isRunning;
-		if (canDisptach) {
-			activeFormService = this;
-		}
-		
-		return canDisptach;
-	}
+    @Override
+    public boolean canDispatchEvent(Component arg0, String arg1) {
+        boolean canDisptach = isRunning;
+        if (canDisptach) {
+            activeFormService = this;
+        }
+        
+        return canDisptach;
+    }
 
-	@Override
-	public boolean dispatchEvent(Component component, String componentName, String eventName,
-			Object[] args) {
-		throw new UnsupportedOperationException();
-		
-	}
-	
-	public void Initialize() {
-		serviceHandler.post(new Runnable() {
-					
-			public void run() {
-				EventDispatcher.dispatchEvent(FormService.this, "Initialize");
-				isRunning=true;
-				
-			}
-		});		
-	}
-	
-	@Override
-	public HandlesEventDispatching getDispatchDelegate() {
-		// TODO Auto-generated method stub
-		return this;
-	}
+    @Override
+    public boolean dispatchEvent(Component component, String componentName, String eventName,
+            Object[] args) {
+        throw new UnsupportedOperationException();
+        
+    }
+    
+    public void Initialize() {
+        serviceHandler.post(new Runnable() {
+                    
+            public void run() {
+                EventDispatcher.dispatchEvent(FormService.this, "Initialize");
+                isRunning=true;
+                
+            }
+        });        
+    }
+    
+    @Override
+    public HandlesEventDispatching getDispatchDelegate() {
+        // TODO Auto-generated method stub
+        return this;
+    }
 
-	@Override
-	public void $add(AndroidViewComponent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	// Component Container implementation. We need this so we can initialize the app inventor components. Remember, as this
-	// is a service, only use NON visible components! 
+    @Override
+    public void $add(AndroidViewComponent arg0) {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
+    // Component Container implementation. We need this so we can initialize the app inventor components. Remember, as this
+    // is a service, only use NON visible components! 
 
-	
-	@Override
-	public FormService $formService() {
-		
-		return this;
-	}
-	
-	@Override
-	public String $formSvcName() {
-		return formServiceName;
-	}
+    
+    @Override
+    public FormService $formService() {
+        
+        return this;
+    }
+    
+    @Override
+    public String $formSvcName() {
+        return formServiceName;
+    }
 
-		
-	public static FormService getActiveFormService() {
-		return activeFormService;
-	}
-	
-	public static void destroyService() {
-		if (activeFormService!=null) {
-			activeFormService.stopSelf();
-		} else {
-			throw new IllegalStateException("activeFormService is null.");
-		}
-	}
-	
-	public void deleteComponent(Object component) {
-		if (component instanceof Deleteable) {
-			((Deleteable) component).onDelete();
-		}
-	}
+        
+    public static FormService getActiveFormService() {
+        return activeFormService;
+    }
+    
+    public static void destroyService() {
+        if (activeFormService!=null) {
+            activeFormService.stopSelf();
+        } else {
+            throw new IllegalStateException("activeFormService is null.");
+        }
+    }
+    
+    public void deleteComponent(Object component) {
+        if (component instanceof Deleteable) {
+            ((Deleteable) component).onDelete();
+        }
+    }
 
-	public void callInitialize(Object component) throws Throwable {
-		Method method;
-		try {
-			method = component.getClass().getMethod("Initialize", (Class<?>[]) null);			
-		} catch (SecurityException e){
-			Log.d(LOG_TAG, "Security exception "+e.getMessage());
-			return;
-		} catch (NoSuchMethodException e) {
-			return;
-		}
-		try {
-			Log.d(LOG_TAG, "calling Initialize method for Object "+component.toString());
-			method.invoke(component, (Object[]) null);
-		} catch (InvocationTargetException e) {
-			Log.d(LOG_TAG, "invoke exception: "+e.getMessage());
-			throw e.getTargetException();			
-		}
-	}
+    public void callInitialize(Object component) throws Throwable {
+        Method method;
+        try {
+            method = component.getClass().getMethod("Initialize", (Class<?>[]) null);            
+        } catch (SecurityException e){
+            Log.d(LOG_TAG, "Security exception "+e.getMessage());
+            return;
+        } catch (NoSuchMethodException e) {
+            return;
+        }
+        try {
+            Log.d(LOG_TAG, "calling Initialize method for Object "+component.toString());
+            method.invoke(component, (Object[]) null);
+        } catch (InvocationTargetException e) {
+            Log.d(LOG_TAG, "invoke exception: "+e.getMessage());
+            throw e.getTargetException();            
+        }
+    }
 
-	@Override
-	public Service $context() {
-		
-		return this;
-	}
-	
+    @Override
+    public Service $context() {
+        
+        return this;
+    }
+    
+     public void ErrorOccurred(Component component, String functionName, int errorNumber,
+              String message) {
+            String componentType = component.getClass().getName();
+            componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
+            Log.e(LOG_TAG, "FormService " + formServiceName + " ErrorOccurred, errorNumber = " + errorNumber +
+                ", componentType = " + componentType + ", functionName = " + functionName +
+                ", messages = " + message);
+            if ((!(EventDispatcher.dispatchEvent(
+                this, "ErrorOccurred", component, functionName, errorNumber, message)))
+                )  {
+              // If dispatchEvent returned false, then no user-supplied error handler was run.
+              // If in addition, the screen initializer was run, then we assume that the
+              // user did not provide an error handler.   In this case, we run a default
+              // error handler, namely, showing a notification to the end user of the app.
+              // The app writer can override this by providing an error handler.
+              new Notifiersvc(this).ShowAlert("Error " + errorNumber + ": " + message);
+            }
+          }
 
+    
+          public void dispatchErrorOccurredEvent(final Component component, final String functionName,
+              final int errorNumber, final Object... messageArgs) {
+            
+                String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
+                ErrorOccurred(component, functionName, errorNumber, message);
+              
+            
+          }    
 }
+
