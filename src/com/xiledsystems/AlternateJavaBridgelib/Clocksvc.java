@@ -18,7 +18,8 @@ import com.google.devtools.simple.runtime.events.EventDispatcher;
  *
  */
 
-public final class Clocksvc extends AndroidServiceComponent implements Component, AlarmHandler, Deleteable {
+public final class Clocksvc extends AndroidServiceComponent implements Component, AlarmHandler, Deleteable,
+ OnStartCommandListener, OnDestroyListener {
 
 private TimerInternal timerInternal;
 private boolean timerAlwaysFires = true;
@@ -377,5 +378,19 @@ public void onDelete() {
 	
 	TimerEnabled(false);
 	
+}
+
+@Override
+public void onDestroy() {
+    
+    TimerEnabled(false);
+    
+}
+
+@Override
+public void onStartCommand() {
+
+    onScreen = true;
+    
 }
 }
