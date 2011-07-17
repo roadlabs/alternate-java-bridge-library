@@ -33,6 +33,7 @@ public class FormService extends Service implements Component, SvcComponentConta
 	private String formServiceName;
 	private final Handler serviceHandler = new Handler();
 	private final Set<OnStartCommandListener> onStartCommandListeners = Sets.newHashSet();
+  private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
 	
 	@Override
     public void onCreate() {
@@ -79,7 +80,14 @@ public class FormService extends Service implements Component, SvcComponentConta
 		Log.d(LOG_TAG, "FormService "+formServiceName+" got onDestroy");
 		
 		EventDispatcher.removeDispatchDelegate(this);
+    for (OnDestroyListener onDestroyListener : onDestroyListeners) {
+            onDestroyListener.onDestroy();
+        }
 	}
+   
+  public void registerForOnDestroy(OnDestroyListener component) {
+        onDestroyListeners.add(component);
+    }
 	
 		
 	@Override
