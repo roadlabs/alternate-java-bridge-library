@@ -20,7 +20,7 @@ import android.util.Log;
  * which doesn't have a UI. Some modifications had to be made to adjust the "form" to a service instead
  * of an activity. 
  * 
- * @author Impinc
+ * Ryan Bis - www.xiledsystems.com
  *
  */
 
