@@ -1,0 +1,30 @@
+AlternateJavaBridgelibActivity
+ - dummy activity with a small explanation of the library
+    
+AndroidServiceComponent
+ - base class for making components that work in services (FormService)
+ 
+Clocksvc
+ - clock/timer component for services
+ 
+FormService
+ - Base class to use for creating a service. The funtion is very similar to how one creates an
+ activity with Java Bridge (Form)
+ 
+JsonUtil2
+ - Modified version of JsonUtil from the Java Bridge. This is in testing right now. I need
+ feedback. This class is used by other components.
+ 
+ListPicker2
+ - Modified ListPicker class. This uses ArrayList<String> to populate the elements, rather than
+ a YailList.
+ 
+ListPickerActivity2
+ - Activity class used by ListPicker2. This needs to be declared in your manifest if you are
+ using ListPicker2.
+ 
+LocationSensor2
+ - This adds the ability to change the MIN TIME INTERVAL of the gps updates. It's default is
+ 60000 (60 seconds), but with this component, you can change it. This will be come deprecated
+ when the new JavaBridge version comes out. This will get removed then.
+ 
