@@ -1,75 +1,93 @@
 AlternateJavaBridgelibActivity
  - dummy activity with a small explanation of the library
+ 
     
 AndroidServiceComponent
  - base class for making components that work in services (FormService)
  
+ 
 Clocksvc
  - clock/timer component for services
+ 
  
 FormService
  - Base class to use for creating a service. The funtion is very similar to how one creates an
  activity with Java Bridge (Form)
  
+ 
 JsonUtil2
  - Modified version of JsonUtil from the Java Bridge. This is in testing right now. I need
  feedback. This class is used by other components.
+ 
  
 ListPicker2
  - Modified ListPicker class. This uses ArrayList<String> to populate the elements, rather than
  a YailList.
  
+ 
 ListPickerActivity2
  - Activity class used by ListPicker2. This needs to be declared in your manifest if you are
  using ListPicker2.
+ 
  
 LocationSensor2
  - This adds the ability to change the MIN TIME INTERVAL of the gps updates. It's default is
  60000 (60 seconds), but with this component, you can change it. This will be come deprecated
  when the new JavaBridge version comes out. This will get removed then.
  
+ 
 MediaUtilsvc
  - This is modified from MediaUtil in JavaBridge. It's adjusted to be able to work in a
  service.
  
+ 
 Notifiersvc
  - Modified from Notifier (JB) to run in a service.
+ 
  
 OnDestroyListener
  - interface for tapping into a service's onDestroy() method for components within that 
  service.
  
+ 
 OnStartCommandListener
  - same as above, only for the onStartCommand() method.
+ 
  
 Playersvc
  - Modified from JB's Player class to work in a service. Added new Event thrown "OnStartCommand"
  so one can modify what the player does when the service receives a new intent.
  
+ 
 Soundsvc
  - Modified from JB's Sound class to work in a service. Added new Event thrown "OnStartCommand"
  so one can modify what the sound component does when the service receives a new intent.
  
-
+ 
 SvcComponentContainer
  - interface for services to become component containers, thus allowing us to use the 
  modified java bridge components.
- 
+
+
 Textingsvc
  - Modified from JB's Texting class to work in a service.
- 
+
+
 TinyDB2
  - Modified from JB's TinyDB class. This saves data to a binary file rather than using
  shared preferences. All uses of YailList were removed. To store lists, use an 
  ArrayList<K>. To retrieve an arraylist, use getList(). Be sure to look at the
  sample to see how it works.
- 
+
+
 TinyDBsvc
  - Modified from TinyDB2 to work in a service.
- 
+
+
 TinyListDB
  - Old version. This will be removed soon.
- 
+
+
 Web2
  - Modified from JB's Web class to work without the need for the kawa library. This
  needs further testing with the JSONTextDecode part of the component. All others
