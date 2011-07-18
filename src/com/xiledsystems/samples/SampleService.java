@@ -28,7 +28,7 @@ public class SampleService extends FormService implements HandlesEventDispatchin
 	
 	// Again, just like in Form, this $define() section is similar to a main() method. One thing to note. This is only run
 	// when the service is first created. If the service is in sticky mode, and you send another intent to start the
-	// service, it runs OnStartCommand instead.
+	// service, it only runs OnStartCommand.
 	
 	void $define() {
 		// And we initialize our declarations just like usual
