@@ -1,6 +1,9 @@
 package com.xiledsystems.AlternateJavaBridgelib;
 
 import java.lang.reflect.InvocationTargetException;
+import com.xiledsystems.AlternateJavaBridgelib.Notifiersvc;
+import com.xiledsystems.AlternateJavaBridgelib.OnStartCommandListener;
+import com.xiledsystems.AlternateJavaBridgelib.OnDestroyListener;
 import java.lang.reflect.Method;
 import java.util.Set;
 import com.google.devtools.simple.runtime.components.android.AndroidViewComponent;
@@ -10,16 +13,24 @@ import com.google.devtools.simple.runtime.components.HandlesEventDispatching;
 import com.google.devtools.simple.runtime.components.android.collect.Sets;
 import com.google.devtools.simple.runtime.components.util.ErrorMessages;
 import com.google.devtools.simple.runtime.events.EventDispatcher;
+import com.xiledsystems.AlternateJavaBridgelib.SvcComponentContainer;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 /**
  * Most of this was copied from Java Bridge's Form class. Lots of stuff was left out, as this is a service,
  * which doesn't have a UI. Some modifications had to be made to adjust the "form" to a service instead
- * of an activity. 
+ * of an activity. I've also added the option to have the service process information through a thread.
+ * If you need to use a thread (should only really use it for CPU intensive operations), then the service
+ * needs to have the stickyVal set to START_STICKY. Then, you can capture the event the thread runs in
+ * with "ThreadRunning".
  * 
  * Ryan Bis - www.xiledsystems.com
  *
@@ -35,6 +46,28 @@ public class FormService extends Service implements Component, SvcComponentConta
     private final Handler serviceHandler = new Handler();
     private final Set<OnStartCommandListener> onStartCommandListeners = Sets.newHashSet();
     private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+    private ServiceHandler mServiceHandler;
+    private Looper mServiceLooper;
+    
+    // Handler that receives messages from the thread
+      private final class ServiceHandler extends Handler {
+          public ServiceHandler(Looper looper) {
+              super(looper);
+          }
+          @Override
+          public void handleMessage(Message msg) {
+              // We will leave this blank. Put the event here to process in the thread.
+              // 
+              EventDispatcher.dispatchEvent(FormService.this, "ThreadRunning");
+              
+              // Stop the service using the startId, so that we don't stop
+              // the service in the middle of handling another job
+              // Leave it to the one thread for now.
+              Log.d(LOG_TAG, "FormService " + formServiceName + " thread is stopping.");
+              stopSelf(msg.arg1);
+              
+          }
+      }
     
     @Override
     public void onCreate() {
@@ -49,6 +82,7 @@ public class FormService extends Service implements Component, SvcComponentConta
        activeFormService = this;
        Log.i(LOG_TAG, "active FormService is now "+activeFormService.formServiceName);
        
+      
        $define();
        Initialize();
     }
@@ -64,6 +98,17 @@ public class FormService extends Service implements Component, SvcComponentConta
         for (OnStartCommandListener onStartCommandListener : onStartCommandListeners) {
             onStartCommandListener.onStartCommand();
         }
+        
+        // This only applies if the thread has started. The thread won't start unless stickyVal is set
+        // to START_STICKY. This way, we don't have a thread running for no reason. Most services probably
+        // won't need to use a seperate thread, but it's nice to have in case you run into a case where
+        // you do need to use it.
+        if (stickyVal==START_STICKY){
+            Message msg = mServiceHandler.obtainMessage();
+            msg.arg1 = startId;
+            mServiceHandler.sendMessage(msg);
+        }
+       
         return stickyVal;
     }
     
@@ -83,6 +128,10 @@ public class FormService extends Service implements Component, SvcComponentConta
         for (OnDestroyListener onDestroyListener : onDestroyListeners) {
             onDestroyListener.onDestroy();
         }
+        if (stickyVal==START_STICKY) {
+            mServiceLooper = null;
+            mServiceHandler = null;
+        }
     }
     
     public void registerForOnDestroy(OnDestroyListener component) {
@@ -92,7 +141,8 @@ public class FormService extends Service implements Component, SvcComponentConta
         
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
+        // Possibly thinking about adding an event here, so people can bind to the service. Will wait to see if it is
+        // something I need, or people want.
         return null;
     }
 
@@ -114,14 +164,28 @@ public class FormService extends Service implements Component, SvcComponentConta
     }
     
     public void Initialize() {
-        serviceHandler.post(new Runnable() {
-                    
+        
+        serviceHandler.post(new Runnable() {                    
             public void run() {
                 EventDispatcher.dispatchEvent(FormService.this, "Initialize");
-                isRunning=true;
-                
+                isRunning=true;                
             }
         });        
+         if (stickyVal==START_STICKY) {
+                // Now let's have the service start in it's own thread unrelated to the process's main thread.
+                // This will allow for more processing within the service without it killing the UI
+                // thread. It will also take background priority. The service will only run in a background
+                // thread when it is set to START_STICKY.
+                 // Send a note to log cat to indicate the thread is active.
+                 Log.d(LOG_TAG, "FormService " + formServiceName + " is starting it's thread.");
+             
+                HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
+                thread.start();
+            
+                // Per the android dev site, we get the Handlerthread's looper and use it for our handler
+                mServiceLooper = thread.getLooper();
+                mServiceHandler = new ServiceHandler(mServiceLooper);
+         }
     }
     
     @Override
@@ -162,6 +226,7 @@ public class FormService extends Service implements Component, SvcComponentConta
             activeFormService.stopSelf();
         } else {
             throw new IllegalStateException("activeFormService is null.");
+        
         }
     }
     
@@ -224,5 +289,11 @@ public class FormService extends Service implements Component, SvcComponentConta
               
             
           }    
+          
+    public final void runOnSvcThread(Runnable action) {
+        
+        action.run();
+        
+    }
 }
 
