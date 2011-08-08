@@ -5,20 +5,53 @@ AlternateJavaBridgelibActivity
 AndroidServiceComponent
  - base class for making components that work in services (FormService)
  
+Button2
+ - Button which has OnInitializeListener implemented. This allows for automatic resizing.
+ You must use setMultpliers(widthmultiplier, heightmultiplier); when setting defaults
+ for the button (in the define() method)
+ 
+ButtonBase2
+ - Base class for buttons. This is actually what implements the OnInitializeListener.
+ Buttons, and ListPickers extend from this class. This also has added an event
+ for capturing the Up and Down States of a button.
+ 
+Canvas2
+ - Modified canvas to implement the OnInitializeListener for auto resizing.
+ 
+Clock2
+ - Modified from Clock.java (javabridge). The only difference is that when an
+ activity loses focus, the clock will turn it's timer off. This is to prevent
+ memory leaks. If you want the clock to continue, use Clock.
  
 Clocksvc
  - clock/timer component for services
  
+Form2
+ - Use this to extend your activities from if you wish to take advantage of the
+ components that auto resize. Those components will work just like the java
+ bridge ones if put into a regular Form (they won't resize)
  
 FormService
  - Base class to use for creating a service. The funtion is very similar to how one creates an
  activity with Java Bridge (Form)
  
+Image2
+ - Modified version of javabridge's Image.class. This uses a different way to draw
+ the image. This allows you to stretch the image any way you want. The default
+ javabridge Image only allows stretching if the aspect ratio is kept the same.
+ 
+ImageSprite2
+ - This is essentially the same as ImageSprite.class. Only this will automatically shut
+ it's timer off when the activity it resides in has lost focus. This is to prevent
+ memory leaks. You should know that the timer is re-enabled upon the activity
+ being resumed.
  
 JsonUtil2
  - Modified version of JsonUtil from the Java Bridge. This is in testing right now. I need
  feedback. This class is used by other components.
  
+Label2
+ - This has been modified to implement the OnInitializeListener
  
 ListPicker2
  - Modified ListPicker class. This uses ArrayList<String> to populate the elements, rather than
@@ -49,25 +82,44 @@ OnDestroyListener
  - interface for tapping into a service's onDestroy() method for components within that 
  service.
  
+OnInitializeListener
+ - interface for tapping into a Form's Initialize method (for auto resizing components)
  
 OnStartCommandListener
- - same as above, only for the onStartCommand() method.
+ - same as OnDestroyListener, only for the onStartCommand() method instead.
  
+Picker2
+ - Base class of ListPicker2
  
 Playersvc
  - Modified from JB's Player class to work in a service. Added new Event thrown "OnStartCommand"
  so one can modify what the player does when the service receives a new intent.
  
+ScrollView
+ - Base class for srollview.
+ 
+ScrollViewArrangement
+ - Like a Horizontal or Vertical Arrangement, only this automatically will scroll. Right now,
+ this is only vertical scrolling. Note, this extends from a FrameLayout. So, it's meant to
+ hold one thing (however, that one thing can contain multiple other things).
  
 Soundsvc
  - Modified from JB's Sound class to work in a service. Added new Event thrown "OnStartCommand"
  so one can modify what the sound component does when the service receives a new intent.
  
+Sprite2
+ - Base class of ImageSprite2
  
+SVArragement
+ - Base class of ScrollViewArrangement.
+ 
+  
 SvcComponentContainer
  - interface for services to become component containers, thus allowing us to use the 
  modified java bridge components.
-
+ 
+TextBox2
+ - Modified to implement OnInitializeListener for auto-resizing.
 
 Textingsvc
  - Modified from JB's Texting class to work in a service.
@@ -86,10 +138,15 @@ TinyDBsvc
 
 TinyListDB
  - Old version. This will be removed soon.
-
+ 
+TinyWebDB2
+ - This is still in testing phase. It works for primitive types such as String, int, etc.
+ This hasn't been tested on JSON items yet.
 
 Web2
  - Modified from JB's Web class to work without the need for the kawa library. This
  needs further testing with the JSONTextDecode part of the component. All others
  should function fine.
  
+Websvc
+ - The same as above, modified to work in a service.
