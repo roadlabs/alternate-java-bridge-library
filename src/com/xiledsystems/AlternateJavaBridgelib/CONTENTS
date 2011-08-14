@@ -1,3 +1,6 @@
+AdMobBanner
+ - Component for displaying admob ad banners within the bridge
+
 AlternateJavaBridgelibActivity
  - dummy activity with a small explanation of the library
  
@@ -25,6 +28,9 @@ Clock2
  
 Clocksvc
  - clock/timer component for services
+ 
+ContactPicker2
+ - Picker for contacts. Extends from Picker2.
  
 Form2
  - Use this to extend your activities from if you wish to take advantage of the
@@ -88,8 +94,13 @@ OnInitializeListener
 OnStartCommandListener
  - same as OnDestroyListener, only for the onStartCommand() method instead.
  
+PhoneNumberPicker2
+ - Extends ContactPicker2.
+ 
 Picker2
- - Base class of ListPicker2
+ - Base class of ListPicker2. This also is the base class of ContactPicker2 (and PhoneNumberPicker2
+ as well). This adds the LongClick event for these components, as well as the UpState
+ and DownState events.
  
 Playersvc
  - Modified from JB's Player class to work in a service. Added new Event thrown "OnStartCommand"
