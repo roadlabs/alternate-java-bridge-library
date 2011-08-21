@@ -8,6 +8,12 @@ AlternateJavaBridgelibActivity
 AndroidServiceComponent
  - base class for making components that work in services (FormService)
  
+AnimSprite
+ - Sprite used for animation
+ 
+AnimHandler
+ - Used for handling animation for AnimSprites
+ 
 Button2
  - Button which has OnInitializeListener implemented. This allows for automatic resizing.
  You must use setMultpliers(widthmultiplier, heightmultiplier); when setting defaults
